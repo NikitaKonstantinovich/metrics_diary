@@ -17,18 +17,11 @@ qt_add_qml_module(appmetrics_diary
     VERSION 1.0
     QML_FILES
         Main.qml
-        QML_FILES style/variables.qml
-        QML_FILES style/Scale.qml
-        QML_FILES style/Variables.qml
+        Components/DayCell.qml
+        Components/Fluid.js
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
 set_target_properties(appmetrics_diary PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appmetrics_diary
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
@@ -36,6 +29,8 @@ set_target_properties(appmetrics_diary PROPERTIES
 target_link_libraries(appmetrics_diary
     PRIVATE Qt6::Quick
 )
+
+qt_import_qml_plugins(appmetrics_diary)
 
 include(GNUInstallDirs)
 install(TARGETS appmetrics_diary

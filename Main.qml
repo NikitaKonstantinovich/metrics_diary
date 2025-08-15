@@ -1,8 +1,20 @@
+// Main.qml
 import QtQuick
+import QtQuick.Controls
+import "Components"
 
 Window {
-    width: 640
-    height: 480
+    id: root
+    width: 400
+    height: 400
     visible: true
-    title: qsTr("Metrics diary")
+    color: "white"
+
+    // Один пример DayCell
+    DayCell {
+        anchors.centerIn: parent
+        dayNumber: 15
+        avrMetric: 1
+        viewportWidth: root.width
+    }
 }
