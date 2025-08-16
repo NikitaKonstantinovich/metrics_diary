@@ -5,8 +5,8 @@ import "Components"
 
 Window {
     id: root
-    width: 400
-    height: 400
+    width: 1200
+    height: 800
     visible: true
     color: "white"
 
@@ -24,6 +24,7 @@ Window {
         month: 8
         metricsByDate: root.metrics
         mondayFirst: true
+        viewportWidth: root.width
 
         onDayActivated: (iso) => {
             console.log("clicked:", iso)

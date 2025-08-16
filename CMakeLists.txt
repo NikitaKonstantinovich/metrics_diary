@@ -22,6 +22,7 @@ qt_add_qml_module(appmetrics_diary
         QML_FILES Components/MonthGrid.qml
         SOURCES CalendarModel.h
         SOURCES CalendarModel.cpp
+        QML_FILES Components/Sizing.js
 )
 
 set_target_properties(appmetrics_diary PROPERTIES

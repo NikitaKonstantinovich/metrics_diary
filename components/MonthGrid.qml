@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Diary 1.0
 import "."
 import "Fluid.js" as U
+import "Sizing.js" as S
 
 Item {
     id: root
@@ -13,43 +14,24 @@ Item {
     property var metricsByDate: ({})  // { "YYYY-MM-DD": 1..11, ... }
 
     // ===== ширина окна, по которой делаем адаптацию =====
-    property int viewportWidth: width
-
-    // ====== брейкпоинты ======
-    readonly property int bpLaptop: 1440
-    readonly property int bpTablet: 1023
-    readonly property int bpMobile: 767
-    readonly property int bpMobileS: 480
+    property int viewportWidth: 400
 
     // ====== динамические отступы ======
     // отступ между ячейками
-    property int gap: {
-        if (viewportWidth <= bpMobileS)
-            return 3
-        else if (viewportWidth <= bpMobile)
-            return U.fluid(viewportWidth, bpMobileS, bpMobile, 3, 4, true)
-        else if (viewportWidth <= bpTablet)
-            return U.fluid(viewportWidth, bpMobile, bpTablet, 4, 6, true)
-        else if (viewportWidth <= bpLaptop)
-            return U.fluid(viewportWidth, bpTablet, bpLaptop, 6, 8, true)
-        return 8
-    }
+    property int gap: S.gap(viewportWidth)
     // боковой отступ
-    property int sideMargin: {
-        if (viewportWidth <= bpMobileS)
-            return 2
-        else if (viewportWidth <= bpMobile)
-            return U.fluid(viewportWidth, bpMobileS, bpMobile, 2, 3, true)
-        else if (viewportWidth <= bpTablet)
-            return U.fluid(viewportWidth, bpMobile, bpTablet, 3, 6, true)
-        else if (viewportWidth <= bpLaptop)
-            return U.fluid(viewportWidth, bpTablet, bpLaptop, 6, 10, true)
-        return 10
-    }
+    property int sideMargin: S.sideMargin(viewportWidth)
+
+    // ====== базовый размер ячейки ======
+    property int side: S.side(viewportWidth)
+    property int cellBorder: S.borderWidth(viewportWidth)
+    property int sumCellSize: side + 2 * cellBorder
+    property int  fontSize: S.fontSizeByWidth(viewportWidth)
+
 
     // ====== базовый размер клетки ======
-    // ширина всех ячеек = ширина контейнера - боковые отступы - промежутки
-    property real cell: (viewportWidth - 2*sideMargin - 6*gap) / 7
+    property int monthWidth: (2 * sideMargin) + (7 * sumCellSize) + (6 * gap)
+
 
     signal dayActivated(string isoDate)
 
@@ -62,29 +44,34 @@ Item {
 
     // заголовок дней недели
     property bool mondayFirst: true
-    property int headerFontSize: 14
+    property int headerFontSize: S.headerFont(viewportWidth)
 
     readonly property var namesMonFirst: ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"]
     readonly property var namesSunFirst: ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"]
     readonly property var weekdayNames: mondayFirst ? namesMonFirst : namesSunFirst
 
-    ColumnLayout {
-        anchors.fill: parent
+    Column {
+        id: column
+        width: root.monthWidth
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: gap
 
         // строка заголовков
-        RowLayout {
-            Layout.fillWidth: true
+        Row {
+            id: weekHeader
+            width: column.width - 2*sideMargin
+            anchors.horizontalCenter: parent.horizontalCenter
             spacing: gap
+
             Repeater {
                 model: 7
                 delegate: Text {
+                    width: (weekHeader.width - 6*gap) / 7
                     text: root.weekdayNames[index]
                     font.pixelSize: headerFontSize
                     opacity: 0.8
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    Layout.fillWidth: true
                 }
             }
         }
@@ -92,28 +79,33 @@ Item {
         // сама сетка 7×6
         GridView {
             id: grid
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            anchors.leftMargin: sideMargin
-            anchors.rightMargin: sideMargin
+
+            width: column.width
+            height: width
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            interactive: false
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+
+            // ключевой момент: «логическая клетка» включает gap
+            cellWidth:  Math.floor(root.sumCellSize + root.gap)
+            cellHeight: Math.floor(root.sumCellSize + root.gap)
 
             model: model
-            cellWidth:  cell
-            cellHeight: cell
-            boundsBehavior: Flickable.StopAtBounds
-            clip: true
 
             delegate: Item {
                 width:  grid.cellWidth
                 height: grid.cellHeight
 
                 DayCell {
-                    anchors.centerIn: parent
+                    id: tile
+                    anchors.fill: parent
 
-                    // делаем квадрат, чтобы вписался в ячейку с зазором
-                    width:  parent.width
-                    height: parent.height
-                    viewportWidth: root.viewportWidth
+                    cellSize: root.sumCellSize
+                    borderW: root.cellBorder
+                    fontPx: root.fontSize
+
                     dayNumber: model.day
 
                     // берём метрику из словаря, по умолчанию 0 (можешь поставить 7)
