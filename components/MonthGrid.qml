@@ -28,11 +28,6 @@ Item {
     property int sumCellSize: side + 2 * cellBorder
     property int  fontSize: S.fontSizeByWidth(viewportWidth)
 
-
-    // ====== базовый размер клетки ======
-    property int monthWidth: (2 * sideMargin) + (7 * sumCellSize) + (6 * gap)
-
-
     signal dayActivated(string isoDate)
 
     // модель на C++
@@ -50,11 +45,43 @@ Item {
     readonly property var namesSunFirst: ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"]
     readonly property var weekdayNames: mondayFirst ? namesMonFirst : namesSunFirst
 
+    // Локаль
+    property var ruLocale: Qt.locale("ru_RU")
+    readonly property int mNorm12: Math.max(1, Math.min(12, month))
+    readonly property int jsMonthIndex: mNorm12 - 1
+    readonly property string monthTitle: (function () {
+        // QLocale ожидает 1..12 — даём mNorm12
+        const raw = ruLocale.standaloneMonthName
+                  ? ruLocale.standaloneMonthName(jsMonthIndex)
+                  : ruLocale.monthName(jsMonthIndex);
+        // Заглавная первая буква
+        return raw.length ? raw.charAt(0).toUpperCase() + raw.slice(1) : "";
+    })()
+
+
+    // чуть крупнее шрифт для заголовка месяца
+    property int monthTitleFont: headerFontSize + 4
+
+    // ====== базовый размер клетки ======
+    property int monthWidth: (2 * sideMargin) + (7 * sumCellSize) + (6 * gap)
+
     Column {
         id: column
         width: root.monthWidth
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: gap
+
+        // ===== Заголовок месяца (по центру, над днями недели) =====
+        Text {
+            id: title
+            width: column.width
+            text: root.monthTitle
+            font.pixelSize: root.monthTitleFont
+            font.bold: true
+            opacity: 0.9
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
 
         // строка заголовков
         Row {
