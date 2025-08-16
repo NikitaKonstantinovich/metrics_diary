@@ -19,6 +19,9 @@ qt_add_qml_module(appmetrics_diary
         Main.qml
         Components/DayCell.qml
         Components/Fluid.js
+        QML_FILES Components/MonthGrid.qml
+        SOURCES CalendarModel.h
+        SOURCES CalendarModel.cpp
 )
 
 set_target_properties(appmetrics_diary PROPERTIES

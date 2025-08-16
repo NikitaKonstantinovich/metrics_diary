@@ -1,15 +1,15 @@
 // main.cpp
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-#include <QDir>
+#include <QQmlContext>
+#include "CalendarModel.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
-    engine.addImportPath(QDir(QCoreApplication::applicationDirPath())
-                             .filePath("qt/qml"));
+    qmlRegisterType<CalendarModel>("Diary", 1, 0, "CalendarModel");
 
     engine.loadFromModule("metrics_diary", "Main");
 

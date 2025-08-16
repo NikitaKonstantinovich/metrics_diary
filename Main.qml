@@ -10,11 +10,23 @@ Window {
     visible: true
     color: "white"
 
-    // Один пример DayCell
-    DayCell {
-        anchors.centerIn: parent
-        dayNumber: 15
-        avrMetric: 1
-        viewportWidth: root.width
+    property var metrics: ({
+        "2025-08-03": 9,
+        "2025-08-12": 7,
+        "2025-08-21": 4
+    })
+
+    MonthGrid {
+        id: monthView
+        anchors.fill: parent
+        anchors.margins: 12
+        year: 2025
+        month: 8
+        metricsByDate: root.metrics
+        mondayFirst: true
+
+        onDayActivated: (iso) => {
+            console.log("clicked:", iso)
+        }
     }
 }

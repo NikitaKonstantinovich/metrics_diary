@@ -45,8 +45,8 @@ Rectangle  {
     property color baseBorderColor: "#D1D5DB"
     property color hoverBorderColor: "#ADD8E6"
 
-    // Градиент 1..10 для метрик: 1 — красный, 5–6 — жёлтый, 10 — зелёный
-    property var metric10: [
+    // Градиент 1..10 для метрик: 1 — красный, 5–6 — жёлтый, 10 — зелёный, 11 - серый (отсутствие метрик)
+    property var metric11: [
         "#FF0000", // 1
         "#FF2E00", // 2
         "#FF5C00", // 3
@@ -56,7 +56,8 @@ Rectangle  {
         "#B5CC1F", // 7   жёлто-зелёный
         "#84CA34", // 8
         "#53C749", // 9
-        "#22C55E"  // 10  зелёный
+        "#22C55E", // 10  зелёный
+        gray75     // 11  серый
     ]
 
     property int baseRemPx: 16
@@ -85,8 +86,8 @@ Rectangle  {
 
     // ===== Размер шрифта числа дня: =====
     // Laptop+=32, Tablet=30, Mobile=22, Mobile S=16 + интерполяция между диапазонами
-    readonly property int fzLaptop: 32
-    readonly property int fzTablet: 30
+    readonly property int fzLaptop: 28
+    readonly property int fzTablet: 26
     readonly property int fzMobile: 22
     readonly property int fzMobileS: 16
 
@@ -177,7 +178,7 @@ Rectangle  {
     border.color: hoverHandler.hovered ? hoverBorderColor : baseBorderColor
 
     // ====== Публичные свойства (задаются из родителя) =====
-    property int avrMetric: 7
+    property int avrMetric: 11
     property int dayNumber: 12
 
     // ===== Текст с номером дня (по центру) =====
@@ -185,7 +186,7 @@ Rectangle  {
         anchors.centerIn: parent
         text: cell.dayNumber
         font.pixelSize: fontSizeByWidth(cell.viewportWidth)
-        color: metric10[Math.max(1, Math.min(cell.avrMetric, 10)) - 1]
+        color: metric11[Math.max(1, Math.min(cell.avrMetric, 11)) - 1]
     }
 
     // ====== Ховер ======
