@@ -30,7 +30,7 @@ Rectangle {
     property color black30: "#4D4D4D"
 
     property color baseBorderColor: "#D1D5DB"
-    property color hoverBorderColor: "#ADD8E6"
+    property color hoverBorderColor: "#A0A0FF"
 
     // ===== Градиент 1..10 + серый =====
     property var metric11: [

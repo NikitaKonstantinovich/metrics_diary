@@ -3,7 +3,6 @@ import QtQuick
 import QtQuick.Layouts
 import Diary 1.0
 import "."
-import "Fluid.js" as U
 import "Sizing.js" as S
 
 Item {
@@ -64,6 +63,8 @@ Item {
 
     // ====== базовый размер клетки ======
     property int monthWidth: (2 * sideMargin) + (7 * sumCellSize) + (6 * gap)
+    implicitWidth: monthWidth
+    implicitHeight: column.implicitHeight
 
     Column {
         id: column
@@ -128,6 +129,7 @@ Item {
                 DayCell {
                     id: tile
                     anchors.fill: parent
+                    anchors.margins: root.gap
 
                     cellSize: root.sumCellSize
                     borderW: root.cellBorder

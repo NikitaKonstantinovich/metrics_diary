@@ -4,10 +4,11 @@ import QtQuick.Controls
 import "Components"
 
 Window {
-    id: root
-    width: 1200
-    height: 800
+    id: mainWin
     visible: true
+    width: 1920
+    height: 800
+    title: "Metrics Diary"
     color: "white"
 
     property var metrics: ({
@@ -16,18 +17,25 @@ Window {
         "2025-08-21": 4
     })
 
-    MonthGrid {
-        id: monthView
+    YearView {
+        id: yearView
         anchors.fill: parent
-        anchors.margins: 12
-        year: 2025
-        month: 8
-        metricsByDate: root.metrics
-        mondayFirst: true
-        viewportWidth: root.width
-
-        onDayActivated: (iso) => {
-            console.log("clicked:", iso)
-        }
+        year: new Date().getFullYear()
+        viewportWidth: mainWin.width
+        metricsByDate: mainWin.metrics
     }
 }
+// MonthGrid {
+//     id: monthView
+//     anchors.fill: parent
+//     anchors.margins: 12
+//     year: 2025
+//     month: 8
+//     metricsByDate: root.metrics
+//     mondayFirst: true
+//     viewportWidth: root.width
+
+//     onDayActivated: (iso) => {
+//         console.log("clicked:", iso)
+//     }
+// }
