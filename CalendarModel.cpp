@@ -1,3 +1,4 @@
+//CalendarModel.cpp
 #include "CalendarModel.h"
 
 CalendarModel::CalendarModel(QObject *parent)
@@ -59,7 +60,10 @@ void CalendarModel::rebuild() {
 
     QDate first(m_year, m_month, 1);
     int daysInMonth = first.daysInMonth();
-    int startOffset = (first.dayOfWeek() + 6) % 7; // пн=0, вс=6
+    int dayOfWeek = first.dayOfWeek(); // 1..7 (Mon..Sun)
+    int startOffset = m_mondayFirst
+                          ? (dayOfWeek + 6) % 7      // Mon=0, ... Sun=6
+                          : (dayOfWeek % 7);         // Sun=0, Mon=1, ... Sat=6
 
     // Предыдущий месяц
     QDate prev = first.addMonths(-1);
@@ -81,4 +85,11 @@ void CalendarModel::rebuild() {
     }
 
     endResetModel();
+}
+
+void CalendarModel::setMondayFirst(bool v) {
+    if (m_mondayFirst == v) return;
+    m_mondayFirst = v;
+    emit mondayFirstChanged();
+    rebuild();
 }

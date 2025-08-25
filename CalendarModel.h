@@ -1,3 +1,4 @@
+//CalendarModel.h
 #pragma once
 #include <QAbstractListModel>
 #include <QDate>
@@ -32,17 +33,22 @@ public:
     void setYear(int y);
     void setMonth(int m);
 
+    bool mondayFirst() const { return m_mondayFirst; }
+    void setMondayFirst(bool v);
+
 /*
-    *Сигналы — это механизм Qt (как события).
+    *Сигналы — механизм Qt (как события).
     *Когда year или month меняется, мы испускаем сигнал - QML-часть узнаёт, что нужно перестроить UI.
 */
 signals:
     void yearChanged();
     void monthChanged();
+    void mondayFirstChanged();
 
 private:
     void rebuild();    // вспомогательная функция, которая заново пересчитывает массив дней (m_days) при изменении месяца/года.
     int m_year;        // отображаемый год
     int m_month;       // отображаемый месяц
     QList<DayEntry> m_days;  // список всех дней (42 элемента), который реально используется
+    bool m_mondayFirst = true;
 };

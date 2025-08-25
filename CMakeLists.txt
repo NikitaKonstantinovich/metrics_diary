@@ -24,6 +24,8 @@ qt_add_qml_module(appmetrics_diary
         SOURCES CalendarModel.cpp
         QML_FILES Components/Sizing.js
         QML_FILES Components/YearView.qml
+        SOURCES NotesModel.h
+        SOURCES NotesModel.cpp
 )
 
 set_target_properties(appmetrics_diary PROPERTIES
