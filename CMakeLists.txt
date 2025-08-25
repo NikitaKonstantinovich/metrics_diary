@@ -26,6 +26,8 @@ qt_add_qml_module(appmetrics_diary
         QML_FILES Components/YearView.qml
         SOURCES NotesModel.h
         SOURCES NotesModel.cpp
+        QML_FILES
+        QML_FILES Components/DayDetailsPopup.qml
 )
 
 set_target_properties(appmetrics_diary PROPERTIES

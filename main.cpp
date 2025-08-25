@@ -3,10 +3,14 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "CalendarModel.h"
+#include "NotesModel.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+    qmlRegisterType<NotesModel>("Diary", 1, 0, "NotesModel");
+
     QQmlApplicationEngine engine;
 
     qmlRegisterType<CalendarModel>("Diary", 1, 0, "CalendarModel");

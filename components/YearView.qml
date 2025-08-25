@@ -1,3 +1,4 @@
+// Components/YearView.qml
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -6,17 +7,20 @@ import "Sizing.js" as S
 
 Item {
     id: root
+    signal dayActivated(string iso)
+
     property int year: 2025
     property int viewportWidth: width
     property var metricsByDate: ({})
 
-    readonly property int columns: S.columns(viewportWidth)
+    readonly property int columns:  S.columns(viewportWidth)
     readonly property int outerGap: S.sideMargin(viewportWidth)
 
-    readonly property int vGap: S.monthWidthGap(viewportWidth)
-    readonly property int hGap: S.monthHeightGap(viewportWidth)
+    readonly property int hGap: S.monthWidthGap(viewportWidth)
+    readonly property int vGap: S.monthHeightGap(viewportWidth)
 
-    readonly property int tileWidth: (width - outerGap*2 - vGap*(columns - 1)) / columns
+    readonly property int tileWidth: Math.floor((width - outerGap*2 - hGap*(columns - 1)) / columns)
+    readonly property int gridWidth: (columns * tileWidth) + ((columns - 1) * hGap)
 
     ScrollView {
         id: scroller
@@ -24,42 +28,48 @@ Item {
         clip: true
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-        GridLayout {
-            id: grid
-            x: root.outerGap
-            y: root.outerGap
-            width: scroller.width - root.outerGap*2
-            columns: root.columns
-            rowSpacing: root.hGap
-            columnSpacing: root.vGap
+        contentWidth:  Math.max(width, grid.implicitWidth  + outerGap*2)
+        contentHeight:  grid.implicitHeight + outerGap*2
+        Item {
+            id: contentRoot
+            width:  scroller.contentWidth
+            height: scroller.contentHeight
 
-            Repeater {
-                model: 12
+            Grid {
+                id: grid
+                width: root.gridWidth
+                anchors.top: parent.top
+                anchors.topMargin: root.outerGap
+                anchors.horizontalCenter: parent.horizontalCenter
 
-                delegate: Item {
-                    id: tile
+                columns: root.columns
+                rowSpacing: root.vGap
+                columnSpacing: root.hGap
 
-                    // ширина «слота» из GridLayout
-                    Layout.preferredWidth:  root.tileWidth
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                Repeater {
+                    model: 12
 
-                    MonthGrid {
-                        id: monthTile
+                    delegate: Item {
+                        id: tile
 
-                        year:  root.year
-                        month: index + 1
-                         metricsByDate: root.metricsByDate
+                        // ширина «слота» из Grid
+                        width:  root.tileWidth
+                        height: monthTile.implicitHeight
 
-                        viewportWidth: root.viewportWidth
-                        mondayFirst: true
+                        MonthGrid {
+                            id: monthTile
 
-                        onDayActivated: (iso) => {
-                            console.log("clicked:", iso)
+                            year:  root.year
+                            month: index + 1
+                            metricsByDate: root.metricsByDate
+
+                            viewportWidth: root.viewportWidth
+                            mondayFirst: true
+
+                            onDayActivated: (iso) => root.dayActivated(iso)
                         }
-
-                        width:  parent ? parent.width : root.tileWidth
+                        Layout.preferredHeight: monthTile.implicitHeight
                     }
-                    Layout.preferredHeight: monthTile.implicitHeight
                 }
             }
         }

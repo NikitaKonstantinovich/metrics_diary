@@ -24,6 +24,8 @@ QVariant NotesModel::data(const QModelIndex& index, int role) const {
     case IdRole:   return QVariant::fromValue<quint64>(n.id);
     case DateRole: return n.date.toString(Qt::ISODate);
     case TextRole: return n.text;
+    case CreatedAtIsoRole: return n.createdAt.toString(Qt::ISODate);
+    case CreatedAtDisplayRole: return n.createdAt.toString("hh:mm dd.MM");
     default:       return {};
     }
 }
@@ -33,6 +35,8 @@ QHash<int, QByteArray> NotesModel::roleNames() const {
     r[IdRole]   = "id";
     r[DateRole] = "dateString";
     r[TextRole] = "text";
+    r[CreatedAtIsoRole] = "createdAtIso";
+    r[CreatedAtDisplayRole] = "createdAtDisplay";
     return r;
 }
 
@@ -43,20 +47,30 @@ void NotesModel::setCurrentDate(const QString& iso) {
     rebuildIndex();
 }
 
+quint64 NotesModel::addNoteNow(const QString& text) {
+    return addNote(m_currentDate, text);
+}
+
 quint64 NotesModel::addNote(const QString& isoDate, const QString& text) {
     const QDate d = parseIso(isoDate);
     if (!d.isValid()) return 0;
 
     const quint64 id = m_nextId++;
     const int pos = m_allNotes.size();
-    m_allNotes.push_back({ id, d, text });
+    Note n;
+    n.id = id;
+    n.date = d;
+    n.text = text;
+    n.createdAt = QDateTime::currentDateTime();
+    m_allNotes.push_back(std::move(n));
 
     // если добавили в текущую дату — отразим в фильтре
     if (isoDate == m_currentDate) {
-        const int newRow = m_indexMap.size();
-        beginInsertRows(QModelIndex(), newRow, newRow);
+        beginResetModel();
         m_indexMap.push_back(pos);
-        endInsertRows();
+        std::sort(m_indexMap.begin(), m_indexMap.end(),
+                  [this](int a, int b){return m_allNotes[a].createdAt > m_allNotes[b].createdAt; });
+        endResetModel();
     }
     return id;
 }
@@ -105,6 +119,8 @@ void NotesModel::rebuildIndex() {
             if (m_allNotes[i].date == d)
                 m_indexMap.push_back(i);
         }
+        std::sort(m_indexMap.begin(), m_indexMap.end(),
+                  [this](int a, int b){return m_allNotes[a].createdAt > m_allNotes[b].createdAt; });
     }
     endResetModel();
 }

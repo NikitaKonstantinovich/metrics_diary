@@ -17,25 +17,34 @@ Window {
         "2025-08-21": 4
     })
 
-    YearView {
-        id: yearView
+    // контейнер календаря
+    Item {
+        id: calendarRoot
         anchors.fill: parent
-        year: new Date().getFullYear()
-        viewportWidth: mainWin.width
-        metricsByDate: mainWin.metrics
+
+        YearView {
+            id: yearView
+            anchors.fill: parent
+            year: new Date().getFullYear()
+            viewportWidth: mainWin.width
+            metricsByDate: mainWin.metrics
+
+            // проброс сигнала из YearView
+            onDayActivated: (iso) => {
+                details.currentDateIso = iso
+                details.blurSource = calendarRoot
+                details.open()
+            }
+        }
+    }
+
+    // оверлей-окно поверх календаря
+    DayDetailsPopup {
+        id: details
+        parent: Overlay.overlay
+        anchors.centerIn: parent
+        width:  mainWin.width
+        height: mainWin.height
+        z: 1000
     }
 }
-// MonthGrid {
-//     id: monthView
-//     anchors.fill: parent
-//     anchors.margins: 12
-//     year: 2025
-//     month: 8
-//     metricsByDate: root.metrics
-//     mondayFirst: true
-//     viewportWidth: root.width
-
-//     onDayActivated: (iso) => {
-//         console.log("clicked:", iso)
-//     }
-// }

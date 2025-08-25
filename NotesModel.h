@@ -1,6 +1,7 @@
 #pragma once
 #include <QAbstractListModel>
 #include <QDate>
+#include <QDateTime>
 #include <QString>
 #include <QVector>
 
@@ -8,6 +9,7 @@ struct Note {
     quint64 id; //PK
     QDate   date;
     QString text;
+    QDateTime createdAt;
 };
 
 class NotesModel : public QAbstractListModel {
@@ -18,7 +20,9 @@ public:
     enum Roles {
         IdRole = Qt::UserRole + 1,
         DateRole,
-        TextRole
+        TextRole,
+        CreatedAtIsoRole,
+        CreatedAtDisplayRole
     };
     Q_ENUM(Roles)
 
@@ -34,6 +38,7 @@ public:
     void setCurrentDate(const QString& iso);
 
     // CRUD
+    Q_INVOKABLE quint64 addNoteNow(const QString& text);
     Q_INVOKABLE quint64 addNote(const QString& isoDate, const QString& text);
     Q_INVOKABLE bool updateNote(quint64 id, const QString& newText);
     Q_INVOKABLE bool deleteNote(quint64 id);
